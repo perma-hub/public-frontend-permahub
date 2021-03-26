@@ -1,0 +1,38 @@
+version: '3.1'
+
+services:
+
+  permahub-wordpress:
+    image: wordpress:5.7
+    container_name: permahub_frontend
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: permahub-db
+      WORDPRESS_DB_USER: perma_user
+      WORDPRESS_DB_PASSWORD: 543212345@0
+      WORDPRESS_DB_NAME: permahub
+    volumes:
+      - /c/Users/Isabella Jose/Projects/public-frontend-permahub/wordpress:/var/www/html
+
+  permahub-db:
+    image: mysql:5.7
+    container_name: permahub_db
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: permahub
+      MYSQL_USER: perma_user
+      MYSQL_PASSWORD: 543212345@0
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - permahub_db:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 3301:8080
+volumes:
+  permahub_db:
