@@ -7,6 +7,17 @@
         :text="snackbar.text"
         :color="snackbar.color"
       />
+      <popup v-model="showSuccessDialog" color="success lighten-2" width="500">
+        <v-card-title />
+        <v-card-text>
+          Thank you for joining PermaHub. Just one more step needed to login,
+          please verify your e-mail. Check your inbox to verify your account.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text href="/">go to home</v-btn>
+        </v-card-actions>
+      </popup>
       <v-card outlined>
         <v-form ref="form" v-model="valid">
           <v-card-title class="text-center">
@@ -75,15 +86,15 @@
 </template>
 
 <script>
+import { REGISTER_URL } from "./constants";
 import axios from "axios";
 import Loading from "./Loading.vue";
 import Snackbar from "./Snackbar.vue";
+import Popup from "./Popup.vue";
 
-const BACKEND_SERVER_URL = "http://localhost:8090";
-const REGISTER_URL = BACKEND_SERVER_URL + "/public/api/users/register";
 export default {
   name: "SignUpForm",
-  components: { Loading, Snackbar },
+  components: { Loading, Snackbar, Popup },
   data: () => ({
     valid: true,
 
@@ -117,31 +128,27 @@ export default {
       text: "",
       color: "info",
     },
+    showSuccessDialog: false,
   }),
 
   methods: {
     async submit() {
       try {
         this.loading = true;
-        const response = await axios.post(REGISTER_URL, this.formData, {
+        await axios.post(REGISTER_URL, this.formData, {
           crossDomain: true,
         });
-        var message = "User has successfully registered";
-        if (
-          response.hasOwnProperty("success") &&
-          response.success.hasOwnProperty("email")
-        ) {
-          message = message + " - `" + response.success.email + "`";
-        }
-        this.notify(message, "success");
+
+        this.showSuccessDialog = true;
+        console.log(this.showSuccessDialog);
       } catch (error) {
         var message = error.toString();
         var color = "error";
         if (
-          error.hasOwnProperty("response") &&
-          error.response.hasOwnProperty("data") &&
-          error.response.data.hasOwnProperty("error") &&
-          error.response.data.error.hasOwnProperty("message")
+          error.response !== undefined &&
+          error.response.data !== undefined &&
+          error.response.data.error !== undefined &&
+          error.response.data.error.message !== undefined
         ) {
           message = error.response.data.error.message;
           if (Math.floor(error.response.status / 100) == 4) {
