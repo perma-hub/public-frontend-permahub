@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app flat color="primary">
-      <span class="brand font-size-h6">PermaHub</span>
+      <span class="brand font-size-h6"><a href="/">PermaHub</a></span>
       <v-spacer />
       <v-btn
         v-for="(item, key) in $site.themeConfig.nav"

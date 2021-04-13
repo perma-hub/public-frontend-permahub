@@ -1,5 +1,6 @@
 import Vuetify from 'vuetify'
 import "vuetify/dist/vuetify.min.css";
+import VueCookies from 'vue-cookies';
 
 export default ({
     Vue,      // the version of Vue being used in the VuePress app
@@ -8,6 +9,7 @@ export default ({
     siteData,  // site metadata
 }) => {
     Vue.use(Vuetify)
+    Vue.use(VueCookies)
     options.vuetify = new Vuetify({
         theme: {
             dark: false,

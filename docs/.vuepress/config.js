@@ -4,7 +4,7 @@ module.exports = {
     plugins: ["vuetify"],
     themeConfig: {
         nav: [
-            { text: 'Home', link: '/' },
+            { text: 'Login', link: '/users/login' },
             { text: 'Sign Up', link: '/users/signup' },
         ]
     },

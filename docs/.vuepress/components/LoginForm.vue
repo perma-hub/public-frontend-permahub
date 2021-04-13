@@ -7,25 +7,11 @@
         :text="snackbar.text"
         :color="snackbar.color"
       />
-      <popup v-model="showSuccessDialog" color="success lighten-2" :width="500">
-        <v-card-title />
-        <v-card-text>
-          Thank you for joining PermaHub. Just one more step needed to login,
-          please verify your e-mail. Check your inbox to verify your account.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn text href="/">go to home</v-btn>
-        </v-card-actions>
-      </popup>
       <v-card outlined>
         <v-form ref="form" v-model="valid">
           <v-card-title class="text-center mb-4">
             <span class="font-size-h5">
-              Join&nbsp;<span class="brand">PermaHub</span>
-            </span>
-            <span class="font-size-body">
-              Sign up to join permaculture community
+              Login to <span class="brand">PermaHub</span>
             </span>
           </v-card-title>
           <v-card-text>
@@ -52,18 +38,6 @@
               outlined
               rounded
             />
-            <v-text-field
-              :append-icon="show.confirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              :rules="rules.confirmPassword(formData.password)"
-              :type="show.confirmPassword ? 'text' : 'password'"
-              label="Confirm  Password"
-              color="accent"
-              hint="Match with password"
-              @click:append="show.confirmPassword = !show.confirmPassword"
-              dense
-              outlined
-              rounded
-            />
           </v-card-text>
 
           <v-card-actions class="pa-4">
@@ -76,7 +50,7 @@
               rounded
               depressed
             >
-              Sign Up
+              Login
             </v-btn>
           </v-card-actions>
         </v-form>
@@ -84,17 +58,20 @@
     </v-col>
   </v-row>
 </template>
-
 <script>
-import { REGISTER_URL } from "./constants";
+import {
+  LOGIN_URL,
+  LOGIN_COOKIE_EXPIRATION,
+  PERMAHUB_DOMAIN,
+  PRIVATE_FRONTEND_URL,
+} from "./constants";
 import axios from "axios";
 import Loading from "./Loading.vue";
 import Snackbar from "./Snackbar.vue";
-import Popup from "./Popup.vue";
 
 export default {
-  name: "SignUpForm",
-  components: { Loading, Snackbar, Popup },
+  name: "LoginForm",
+  components: { Loading, Snackbar },
   data: () => ({
     valid: true,
 
@@ -104,7 +81,6 @@ export default {
     },
     show: {
       password: false,
-      confirmPassword: false,
     },
     rules: {
       email: [
@@ -115,12 +91,6 @@ export default {
         (v) => !!v || "Password is required",
         (v) => v.length >= 8 || "Password must be 8 characters",
       ],
-      confirmPassword: (x) => [
-        (v) => !!v || "Confirm Password is required",
-        (v) => {
-          return v === x || "Confirm Password must match with Password";
-        },
-      ],
     },
     loading: false,
     snackbar: {
@@ -128,18 +98,23 @@ export default {
       text: "",
       color: "info",
     },
-    showSuccessDialog: false,
   }),
-
   methods: {
     async submit() {
       try {
         this.loading = true;
-        await axios.post(REGISTER_URL, this.formData, {
+        const result = await axios.post(LOGIN_URL, this.formData, {
           crossDomain: true,
         });
 
-        this.showSuccessDialog = true;
+        $cookies.set(
+          "jwt",
+          result.data.success.token,
+          LOGIN_COOKIE_EXPIRATION,
+          null,
+          PERMAHUB_DOMAIN
+        );
+        window.location.href = PRIVATE_FRONTEND_URL;
       } catch (error) {
         var message = error.toString();
         var color = "error";
