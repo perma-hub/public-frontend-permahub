@@ -19,5 +19,14 @@
     </v-main>
   </v-app>
 </template>
-
-
+<script>
+import { PRIVATE_FRONTEND_URL } from "../components/constants";
+export default {
+  name: "Layout",
+  created() {
+    if (this.$cookies.get("jwt") != null) {
+      window.location.href = PRIVATE_FRONTEND_URL;
+    }
+  },
+};
+</script>
