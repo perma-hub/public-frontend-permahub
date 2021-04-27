@@ -109,7 +109,7 @@ export default {
 
         $cookies.set(
           "jwt",
-          result.data.success.token,
+          result.data.success,
           LOGIN_COOKIE_EXPIRATION,
           null,
           PERMAHUB_DOMAIN
@@ -119,10 +119,10 @@ export default {
         var message = error.toString();
         var color = "error";
         if (
-          error.response !== undefined &&
-          error.response.data !== undefined &&
-          error.response.data.error !== undefined &&
-          error.response.data.error.message !== undefined
+          "response" in error &&
+          "data" in error.response &&
+          "error" in error.response.data &&
+          "message" in error.response.data.error
         ) {
           message = error.response.data.error.message;
           if (Math.floor(error.response.status / 100) == 4) {
